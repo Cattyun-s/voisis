@@ -4,7 +4,7 @@ import os
 import wave
 import sys
 sys.path.append(
-    "/home/bender/venv/llm/lib/python3.12/site-packages"
+    "/home/voice_ws/venv/lib/python3.12/site-packages"
 )
 
 from piper import PiperVoice, SynthesisConfig
@@ -18,7 +18,7 @@ class Piper_Node(Node):
     def __init__(self):
         super().__init__('Piper_tts_node')
 
-        self.voice_path = "/home/bender/voice_ws/src/voisis/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
+        self.voice_path = "/home/voice_ws/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
     
         self.voice = PiperVoice.load(self.voice_path) #, use_cuda=True) hay que cambiar a cuda 12. cualquiera
 

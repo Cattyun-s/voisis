@@ -5,7 +5,7 @@ import sys
 import time
 
 sys.path.append(
-    "/home/bender/venv/llm/lib/python3.12/site-packages"
+    "/home/voice_ws/venv/lib/python3.12/site-packages"
 )
 from voisis_interfaces.msg import TextRequest, LLMResponse
 from llama_cpp import Llama
@@ -51,7 +51,7 @@ class BERT_node(Node):
         self.generation_id = 0
 
         # Path to your GGUF model
-        model_path = "/home/bender/voice_ws/src/voisis/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf"
+        model_path = "/home/voice_ws/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf"
 
         self.get_logger().info("Loading model...")
 

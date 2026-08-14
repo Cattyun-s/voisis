@@ -8,7 +8,7 @@ import re
 
 # Initialize the model
 llm = Llama(
-    model_path="/home/bender/v_a/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf",
+    model_path="/home/voice_ws/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf",
     n_ctx=1024,       # Context window size
     n_threads=8,      # Number of CPU threads to use
     n_gpu_layers=-1,   # Number of layers to offload to GPU (set to 0 for CPU only). og is 35, changed to 0
@@ -35,7 +35,7 @@ while True:
 
     assistant_message = ""
     sentence_buffer = ""
-    with open("/home/bender/v_a/llama/BERTlog.txt", "w") as f:
+    with open("/home/voice_ws/llama/BERTlog.txt", "w") as f:
         f.write('')
     
     print("\nAssistant: ", end="", flush=True)
@@ -66,7 +66,7 @@ while True:
             if completed:
                 print(completed, end="", flush=True)
                
-                with open("/home/bender/v_a/llama/BERTlog.txt", "w") as f:
+                with open("/home/voice_ws/llama/BERTlog.txt", "w") as f:
                     f.write(completed)
                 # Keep unfinished remainder
                 sentence_buffer = "".join(parts[len(parts) - (len(parts) % 2):])
@@ -75,7 +75,7 @@ while True:
     if sentence_buffer.strip():
         print(sentence_buffer, end="", flush=True)
 
-        with open("/home/bender/v_a/llama/BERTlog.txt", "w") as f:
+        with open("/home/voice_ws/llama/BERTlog.txt", "w") as f:
             f.write(sentence_buffer)
 
 
