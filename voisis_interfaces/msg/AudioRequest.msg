@@ -1,0 +1,2 @@
+uint32 conversation_id
+string audio_path
