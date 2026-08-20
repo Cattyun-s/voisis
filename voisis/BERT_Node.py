@@ -13,7 +13,7 @@ import re
 
 class BERT_node(Node):
 
-    def __init__(self):
+    def __init__(self):voice_ws
         super().__init__('BERT_llm_node')
 
         # Publisher for responses
@@ -51,7 +51,7 @@ class BERT_node(Node):
         self.generation_id = 0
 
         # Path to your GGUF model
-        model_path = "/home/voice_ws/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf"
+        model_path = "/home/voice_ws/voisis/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf"
 
         self.get_logger().info("Loading model...")
 

@@ -8,7 +8,7 @@ import re
 
 # Initialize the model
 llm = Llama(
-    model_path="/home/voice_ws/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf",
+    model_path="/home/voice_ws/voisis/llama/mistral-7b-instruct-v0.1-q4_k_m.gguf",
     n_ctx=1024,       # Context window size
     n_threads=8,      # Number of CPU threads to use
     n_gpu_layers=-1,   # Number of layers to offload to GPU (set to 0 for CPU only). og is 35, changed to 0
