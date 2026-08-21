@@ -18,7 +18,7 @@ class Piper_Node(Node):
     def __init__(self):
         super().__init__('Piper_tts_node')
 
-        self.voice_path = "/home/voice_ws/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
+        self.voice_path = "/home/voice_ws/src/voisis/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
     
         self.voice = PiperVoice.load(self.voice_path) #, use_cuda=True) hay que cambiar a cuda 12. cualquiera
 

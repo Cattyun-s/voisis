@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 import os
 from glob import glob
 
-package_name = 'voice_ws'
+package_name = 'voisis'
 
 setup(
  name=package_name,
@@ -24,11 +24,11 @@ setup(
  tests_require=['pytest'],
  entry_points={
      'console_scripts': [
-             'smartVAD_Node = voice_ws.smartVAD_Node:main',
-             'whisper_Node = voice_ws.whisper_Node:main',
-             'BERT_Node = voice_ws.BERT_Node:main',
-             'Piper_Node = voice_ws.Piper_Node:main',
-             'tablet_bridge = voice_ws.tablet_bridge:main'
+             'smartVAD_Node = voisis.smartVAD_Node:main',
+             'whisper_Node = voisis.whisper_Node:main',
+             'BERT_Node = voisis.BERT_Node:main',
+             'Piper_Node = voisis.Piper_Node:main',
+             'tablet_bridge = voisis.tablet_bridge:main'
      ],
    },
 )

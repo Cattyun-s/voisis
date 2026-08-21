@@ -5,7 +5,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
 
 def generate_launch_description():
-    pkg = 'voice_ws'
+    pkg = 'voisis'
 
     BERT_Node = Node(
         package = pkg,

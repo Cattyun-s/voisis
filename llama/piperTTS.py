@@ -4,12 +4,12 @@ from piper import PiperVoice, SynthesisConfig
     
 
 def piperfunc():
-    voice_path = "/home/voice_ws/voisis/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
+    voice_path = "/home/voice_ws/src/voisis/voices/es_MX-claude-high.onnx" #check once everything is passed to ros2
     
     voice = PiperVoice.load(voice_path) #, use_cuda=True) hay que cambiar a cuda 12. cualquiera
     
     
-    with open("/home/voice_ws/voisis/llama/BERTlog.txt") as f:
+    with open("/home/voice_ws//srcvoisis/llama/BERTlog.txt") as f:
         ans = f.read()
     
     with wave.open("test.wav", "wb") as wav_file:

@@ -16,7 +16,7 @@ from .Conversation_state import ConversationState
 from voisis_interfaces.msg import AudioRequest, TextRequest
 
 sys.path.append(
-    "/home/voice_ws/smart-turn"
+    "/home/voice_ws/src/smart-turn"
 )
 import inference
 from record_and_predict import SileroVAD, ensure_model

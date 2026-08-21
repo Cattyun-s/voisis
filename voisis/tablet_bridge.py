@@ -89,7 +89,7 @@ class Tablet_Bridge(Node):
     def start_http_server(self):
 
         os.chdir(
-            "/home/voice_ws/audio"
+            "/home/voice_ws/src/voisis/audio"
         )
 
         server = TCPServer(
