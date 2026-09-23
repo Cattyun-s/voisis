@@ -8,14 +8,14 @@ from rclpy.executors import MultiThreadedExecutor
 import sys
 import threading
 import re
-sys.path.append(
-    "home/voice_ws/src"
-)
+# sys.path.append(
+#     "home/voice_ws/src"
+# )
 from voisis_interfaces.msg import TextRequest, LLMResponse
 
-sys.path.append(
-    "/home/voice_ws/venv/lib/python3.12/site-packages"
-)
+# sys.path.append(
+#     "/home/voice_ws/venv/lib/python3.12/site-packages"
+# )
 
 from llama_cpp import Llama
 

@@ -3,9 +3,9 @@ from rclpy.node import Node
 import os
 import wave
 import sys
-sys.path.append(
-    "/home/bender/venv/llm/lib/python3.12/site-packages"
-)
+# sys.path.append(
+#     "/home/bender/venv/llm/lib/python3.12/site-packages"
+# )
 
 import subprocess
 from std_msgs.msg import String, Bool, Int32

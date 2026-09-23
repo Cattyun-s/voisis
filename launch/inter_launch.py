@@ -13,9 +13,9 @@ def generate_launch_description():
         output = 'screen'
     )
 
-    piper_node = Node(
+    omni_node = Node(
         package = pkg,
-        executable = 'Piper_Node',
+        executable = 'Omni_Node',
         output = 'screen'
     )
 
@@ -33,7 +33,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         BERT_Node,
-        piper_node,
+        omni_node,
         smart_node,
         whisper_node
     ])
