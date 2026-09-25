@@ -1,0 +1,33 @@
+PRUEBAS LLM CON GENTE PARTE Y FUERA DE EL LAB
+
+1. conversación normal
+
+    que no pierda el hilo de la conversación
+        si se contradice mas de 3 veces en una conversación, falló
+    qué tanto recuerda de la conversación 
+        si le dan el nombre y 10 respuestas despues no lo recuerda, falló
+    que las respuestas sean coherentes
+        si dice algo no relacionado en absoluto con el prompt, falló
+    que no tienda a dar respuestas muy largas
+        si de 10 respuestas 3 son demasiado largas para el prompt, falló
+    tiempo de demora en contestar
+        si se demora más de 1o segundos, fallo total
+        entre 10 y 5 segundos, fallo parcial
+        menos de 5 está bien
+        OBSESRVAR REACCIÓN GENTE DEL LAB VS FUERA DEL LAB FRENTE A DEMORAS
+    
+
+2. conversación interrumpida
+
+    dejan de hablarle
+        si dejan de hablarle y no intenta iniciar de nuevo ("estas ahi?", "te fuiste?", etc), falló
+    lo interrumpen
+        si lo interrumpen y no deja de hablar en menos de 2-3 segundos, falló
+    
+    
+    ##prueba con cámara: que se demoren mucho en contestar
+
+
+####################
+
+tal vez agregar que si se corta por extension diga ups sorry me pase

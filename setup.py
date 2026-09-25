@@ -29,7 +29,7 @@ setup(
              'BERT_Node = voisis.BERT_Node:main',
              'Piper_Node = voisis.Piper_Node:main',
              'tablet_bridge = voisis.tablet_bridge:main',
-             'Omni_Node = voisis.Omnni_Node:main'
+             'Omni_Node = voisis.Omni_Node:main'
      ],
    },
 )

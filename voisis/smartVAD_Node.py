@@ -15,6 +15,14 @@ import time
 from .Conversation_state import ConversationState
 from voisis_interfaces.msg import AudioRequest, TextRequest
 
+print("PYTHON:", sys.executable)
+print("PATH:")
+for p in sys.path:
+    print("  ", p)
+
+import sounddevice
+print("SOUNDDEVICE:", sounddevice.__file__)
+
 sys.path.append(
     "/home/voice_ws/src/smart-turn"
 )
