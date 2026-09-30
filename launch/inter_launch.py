@@ -20,9 +20,10 @@ def generate_launch_description():
     )
 
     smart_node = Node(
-        package = pkg,
-        executable = 'smartVAD_Node',
-        output = 'screen'
+        package=pkg,
+        executable='smartVAD_Node',
+        output='screen',
+        cwd='/home/voice_ws/src/smart-turn'
     )
 
     whisper_node = Node(
