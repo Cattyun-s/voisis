@@ -8,15 +8,11 @@ from rclpy.executors import MultiThreadedExecutor
 import sys
 import threading
 import re
-# sys.path.append(
-#     "home/voice_ws/src"
-# )
+
+sys.path.append(
+    "/home/bender/venv/llm/lib/python3.12/site-packages"
+)
 from voisis_interfaces.msg import TextRequest, LLMResponse
-
-# sys.path.append(
-#     "/home/voice_ws/venv/lib/python3.12/site-packages"
-# )
-
 from llama_cpp import Llama
 
 class BERT_node(Node):
@@ -58,16 +54,21 @@ class BERT_node(Node):
         # self.interrupted = False
         self.generation_id = 0
         self.generation_lock = threading.Lock()
+        self.llm_lock = threading.Lock()
 
         # Path to your GGUF model
-        model_path = "/home/voice_ws/src/voisis/llama/Qwen2.5-3B-Q4_K_M.gguf"
+        model_path = "/home/bender/voice_ws/src/voisis/llama/Qwen2.5-3B-Q4_K_M.gguf"
 
         self.get_logger().info("Loading model...")
 
         self.llm = Llama(
             model_path=model_path,
-            n_ctx=2048,
+            n_ctx=4096,       #de 2048 -> 4096
             n_threads=8,      # adjust for your CPU
+            n_batch=512,
+            n_ubatch=512,
+            n_gpu_layers=-1,
+            chat_format = "chatml",
             verbose=False
         )
         self.get_logger().info(
@@ -76,6 +77,21 @@ class BERT_node(Node):
         self.get_logger().info(
             f"Chat template: {self.llm.metadata.get('tokenizer.chat_template', 'NO ENCONTRADO')}"
         )
+        
+        self.system_prompt = {
+            "role": "system",
+            "content": (
+                "Eres Jaime, el robot mayordomo del Laboratorio de Robótica de la Universidad de Chile.\n"
+                "Reglas de respuesta:\n"
+                "1. Responde únicamente en español de forma amable, natural y muy breve (máximo 2 oraciones).\n"
+                "2. Contesta solo a lo que te acaban de preguntar sin agregar texto adicional ni etiquetas.\n"
+                "3. Prohibido adivinar o extrapolar datos, pregunta por contexto."
+            )
+        }
+        
+        self.history = []           # Lsita de {"role": ..., "content": ...}
+        self.max_history_msgs = 12          # 6 turnos (user+assis); ajustar segun n_ctx
+        self.history_conversation = None
 
         self.get_logger().info("Model loaded.")
 
@@ -103,6 +119,10 @@ class BERT_node(Node):
         if self.talking:
             self.get_logger().info("prompt ignorado porque el robot esta detenido.")
             return
+        
+        if msg.conversation_id < self.current_conversation:
+            self.get_logger().warning(f"Ignorando prompt descartado/antiguo ID={msg.conversation_id} (Actual={self.current_conversation})")
+            return
 
         with self.generation_lock:
             self.generation_id += 1
@@ -111,114 +131,160 @@ class BERT_node(Node):
         conversation_id = msg.conversation_id
 
         self.get_logger().info(f"Prompt recibido (conversation={conversation_id}): {msg.text}")
+        
+
+        # if msg.text == "[CHECK_PRESENCE]":
+        #     prompt = [
+        #         {
+        #             "role": "system",
+        #             "content": (
+        #                 "Eres Jaime, el robot mayordomo del Laboratorio de Robótica de la Universidad de Chile. "
+        #                 "Hablas español. Responde siempre en pocas frases cortas y cordiales."                    )
+        #         },
+        #         {
+        #             "role": "user",
+        #             "content": (
+        #                 "El usuario lleva un minuto en silencio. Salúdalo brevemente en menos de 10 palabras."
+        #             )
+        #         },
+        #     ]
+
+        # else:
+        #     prompt = [
+        #         {
+        #             "role": "system",
+        #             "content": (
+        #                 "Eres Jaime, el robot mayordomo del Laboratorio de Robótica de la Universidad de Chile.\n"
+        #                 "Reglas de respuesta:\n"
+        #                 "1. Responde únicamente en español de forma amable, natural y muy breve (máximo 2 oraciones).\n"
+        #                 "2. Contesta solo a lo que te acaban de preguntar sin agregar texto adicional ni etiquetas.\n"
+        #                 "3. Prohibido adivinar o extrapolar datos, pregunta por contexto."
+        #             )
+        #         },
+        #         {
+        #             "role": "user",
+        #             "content": msg.text
+        #         }
+        #     ]
+        
+        # while msg.text == "[CHECK_PRESENCE]":
+            # prompt = [
+                # {
+                    # "role": "system",
+                    # "content": (
+                        # "Eres Jaime, el robot mayordomo del Laboratorio de Robótica de la Universidad de Chile.\n"
+                        # "Reglas de respuesta:\n"
+                        # "1. Responde únicamente en español de forma amable, natural y muy breve (máximo 2 oraciones).\n"
+                        # "2. Contesta solo a lo que te acaban de preguntar sin agregar texto adicional ni etiquetas.\n"
+                        # "3. Prohibido adivinar o extrapolar datos, pregunta por contexto."
+                    # )
+                # },
+                # {
+                    # "role": "user",
+                    # "content": "El usuario lleva un minuto en silencio. Salúdalo brevemente en menos de 10 palabras."
+                # }
+            # ]
+
+
+        # prompt = [
+                    # {
+                        # "role": "system",
+                        # "content": (
+                            # "Eres Jaime, el robot mayordomo del Laboratorio de Robótica de la Universidad de Chile.\n"
+                            # "Reglas de respuesta:\n"
+                            # "1. Responde únicamente en español de forma amable, natural y muy breve (máximo 2 oraciones).\n"
+                            # "2. Contesta solo a lo que te acaban de preguntar sin agregar texto adicional ni etiquetas.\n"
+                            # "3. Prohibido adivinar o extrapolar datos, pregunta por contexto."
+                        # )
+                    # },
+                    # {
+                        # "role": "user",
+                        # "content": msg.text
+                    # }
+                # ]
+                
+        if self.history_conversation != conversation_id:
+            self.history = []
+            self.history_conversation = conversation_id
             
-        if msg.text == "[CHECK_PRESENCE]":
-            prompt = [
-                {
-                    "role": "system",
-                    "content": (
-                        "Eres Jaime, un robot social del "
-                        "Laboratorio de Robótica de la Universidad de Chile. "
-                        "Responde únicamente en español."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        "El usuario lleva aproximadamente un minuto "
-                        "sin interactuar contigo. "
-                        "Inicia la conversación con exactamente una pregunta "
-                        "breve, amable y natural. "
-                        "No uses más de 15 palabras."
-                    )
-                }
-            ]
-
-        else:
-            prompt = [
-                {
-                    "role": "system",
-                    "content": (
-                        "Eres Jaime, un robot del Laboratorio de Robótica\n"
-                        "de la Universidad de Chile.\n"
-                        "Tu trabajo es ser mayordomo del Laboratorio"
-                        "Responde únicamente en español.\n"
-                        "Sé amable, natural y conciso.\n"
-                        "Responde solamente a la última pregunta del usuario.\n"
-                        "No inventes conversaciones anteriores.\n"
-                        "No escribas etiquetas como [INST], [/INST], "
-                        "### Response, ### User o ### Assistant.\n"
-                        "No hagas preguntas ficticias del usuario.\n"
-                        "No continúes conversaciones imaginarias.\n"
-                        "No uses emojis, emoticonos, stickers ni símbolos decorativos."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": msg.text
-                }
-            ]
-
+        self.history.append({"role": "user", "content": msg.text})
+        prompt = [self.system_prompt] + self.history[-self.max_history_msgs:]
+        
+        full_response = ""          #acumula lo que realmente publico
         sentence_buffer = ""
+        
+        stream = None
 
         try:
 
             self.get_logger().info(f"Iniciando generacion {generation_id}")
 
-            stream = self.llm.create_chat_completion(
-                messages=prompt,
-                max_tokens=80,
-                temperature=0.2,
-                stop=[
-                    "<|im_start|>",
-                    "<|im_end|>"
-                ],
-                stream=True
-            )
+            self.get_logger().info("LLM: llamando a create_chat_completion()...")
 
-            for chunk in stream:
-            
-                if not self.check_generation(generation_id):
-                    self.get_logger().info(
-                        f"Generación {generation_id} cancelada"
-                    )
-                    return
-                delta = chunk["choices"][0]["delta"].get("content", "")
-                if not delta:
-                    continue
-                sentence_buffer += delta
-                # Termino la frase
-                while True:
-                    match = re.search(
-                        r'(.+?[.!?\n])',
-                        sentence_buffer,
-                        re.DOTALL
-                    )
+            with self.llm_lock:
+                stream = self.llm.create_chat_completion(
+                    messages=prompt,
+                    max_tokens=80,
+                    temperature=0.15,
+                    stop=[
+                        "<|im_start|>",
+                        "<|im_end|>"
+                    ],
+                    stream=True
+                )
 
-                    if not match:
-                        break
+                self.get_logger().info(
+                    f"LLM devolvió objeto: {type(stream)}"
+                )
 
-                    sentence = match.group(1).strip()
-                    sentence_buffer = sentence_buffer[match.end(): ]
-
-                    if not sentence:
+                for chunk in stream:
+                
+                    if not self.check_generation(generation_id):
+                        self.get_logger().info(f"Generación {generation_id} cancelada")
+                        if self.history and self.history[-1]["role"] == "user":
+                            self.history.pop()
+                        return
+                    delta = chunk["choices"][0]["delta"].get("content", "")
+                    if not delta:
                         continue
+                    sentence_buffer += delta
+                    # Termino la frase
+                    while True:
+                        match = re.search(
+                            r'(.+?[.!?\n])',
+                            sentence_buffer,
+                            re.DOTALL
+                        )
 
-                    self.publish(
-                        sentence,
-                        conversation_id
-                    )
+                        if not match:
+                            break
 
-            if (sentence_buffer.strip() and self.check_generation(generation_id)):
-                self.publish(
-                    sentence_buffer.strip(),
-                    conversation_id
-                    )
+                        sentence = match.group(1).strip()
+                        sentence_buffer = sentence_buffer[match.end(): ]
+
+                        if not sentence:
+                            continue
+
+                        self.publish(sentence,conversation_id)
+                        full_response += sentence + " "
+                        
+            # if (sentence_buffer.strip() and self.check_generation(generation_id)):
+                # self.publish(sentence_buffer.strip(),conversation_id)
+                # full_response += sentence_buffer.strip()
+                
+            if self.check_generation(generation_id):
+                self.history.append({"role":"assistant", "content": full_response.strip()})
 
             self.get_logger().info(f"Generation {generation_id} terminada")
-
+            
         except Exception as e:
             self.get_logger().error(f"Inference failed: {type(e).__name__}: {e}")
+            
+        finally:
+            if stream is not None:
+                close = getattr(stream, "close", None)
+                if close is not None:
+                    close()
 
     def clean_response(self, text):
 
@@ -279,7 +345,7 @@ class BERT_node(Node):
         self.llm_publisher.publish(msg_out)
     
         self.get_logger().info(
-            f"Enviado a Piper "
+            f"Enviado a Omni "
             f"(Conversation={conversation_id}): {text}"
         )
     
@@ -294,7 +360,8 @@ def main(args=None):
         pass
     finally:
         BERTnode.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
