@@ -9,9 +9,9 @@ import sys
 import threading
 import re
 
-sys.path.append(
-    "/home/bender/venv/llm/lib/python3.12/site-packages"
-)
+# sys.path.append(
+#     "/home/bender/venv/llm/lib/python3.12/site-packages"
+# )
 from voisis_interfaces.msg import TextRequest, LLMResponse
 from llama_cpp import Llama
 
@@ -57,7 +57,7 @@ class BERT_node(Node):
         self.llm_lock = threading.Lock()
 
         # Path to your GGUF model
-        model_path = "/home/bender/voice_ws/src/voisis/llama/Qwen2.5-3B-Q4_K_M.gguf"
+        model_path = "/home/voice_ws/src/voisis/llama/Qwen2.5-3B-Q4_K_M.gguf"
 
         self.get_logger().info("Loading model...")
 

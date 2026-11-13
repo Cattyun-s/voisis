@@ -17,7 +17,7 @@ import threading
 
 
 sys.path.append(
-   "/home/bender/voice_ws/src/voisis/smart-turn"
+   "/home/voice_ws/src/smart-turn"
 )
 import inference
 from record_and_predict import SileroVAD, ensure_model
