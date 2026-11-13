@@ -27,8 +27,6 @@ setup(
              'smartVAD_Node = voisis.smartVAD_Node:main',
              'whisper_Node = voisis.whisper_Node:main',
              'BERT_Node = voisis.BERT_Node:main',
-             'Piper_Node = voisis.Piper_Node:main',
-             'tablet_bridge = voisis.tablet_bridge:main',
              'Omni_Node = voisis.Omni_Node:main'
      ],
    },
